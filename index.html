@@ -1,0 +1,109 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Certified Chud</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Added styles for responsive image handling across aspect ratios */
+      .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: auto;
+      }
+      .hero {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain; /* Ensures the image fits without distortion on any aspect ratio */
+      }
+
+      /* Added styles for full-width right-to-left scrolling marquee */
+      .top-bar {
+        overflow: hidden;
+        width: 100%; /* Full screen width */
+      }
+      .marquee {
+        display: flex;
+        white-space: nowrap;
+        animation: marquee-scroll 20s linear infinite; /* Adjust timing for speed */
+      }
+      .marquee span {
+        padding: 0 10px; /* Spacing between text instances */
+      }
+      @keyframes marquee-scroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-100%); }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="marquee" aria-label="Certified Chud">
+        <!-- Duplicated spans for seamless infinite scrolling across the screen -->
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <span>Certified Chud</span>
+        <!-- Repeat more if needed for wider screens, but this should cover most -->
+      </div>
+    </header>
+
+    <main class="content">
+      <img src="assets/content.png" alt="" class="hero" />
+    </main>
+
+    <div id="autoplay-note" class="autoplay-note" hidden>
+      Tap or click anywhere to enable audio
+    </div>
+
+    <div class="controls">
+      <label for="volume">Volume</label>
+      <!-- Disabled the slider so it doesn't work/can't be adjusted -->
+      <input id="volume" type="range" min="0" max="100" value="80" disabled />
+    </div>
+
+    <!-- Added autoplay attribute for automatic playback on load -->
+    <audio id="bg-audio" src="assets/music.mp3" loop autoplay></audio>
+
+    <script src="script.js"></script>
+    <script>
+      // Inline script additions to enforce audio behavior
+      const audio = document.getElementById('bg-audio');
+      const volumeSlider = document.getElementById('volume');
+
+      // Attempt to play audio automatically, show note if blocked
+      document.addEventListener('DOMContentLoaded', () => {
+        audio.play().catch(() => {
+          document.getElementById('autoplay-note').hidden = false;
+          document.body.addEventListener('click', () => {
+            audio.play();
+            document.getElementById('autoplay-note').hidden = true;
+          }, { once: true });
+        });
+      });
+
+      // Set initial volume and prevent turning off sound (min volume enforced)
+      audio.volume = 0.8; // Matches initial slider value
+      volumeSlider.addEventListener('input', (e) => {
+        let vol = e.target.value / 100;
+        if (vol <= 0) vol = 0.01; // Prevent full mute/turn off
+        audio.volume = vol;
+      });
+    </script>
+  </body>
+</html>
