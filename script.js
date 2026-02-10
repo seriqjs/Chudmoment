@@ -8,17 +8,17 @@ let filterNode = null;
 let gainNode = null;
 let ttsInterval = null;
 
-// We want it LOUD — this is the effective max (Web Audio gain can go >1.0 if you want overdrive)
-const TARGET_VOLUME = 5.0;      // 100%
-const BOOST_FACTOR = 5.25;      // slight overdrive for extra chud energy (reduce to 1.0 if too distorted)
+// Restored your original extreme music settings
+const TARGET_VOLUME = 5.0;      // crazy high
+const BOOST_FACTOR = 5.25;      // even more overdrive
 
 const chudPhrases = [
-  "you are a chud",
-  "nice try chud",
-  "chud detected",
-  "stop that, chud",
-  "chud behavior",
-  "certified chud moment"
+  "YOU ARE A CHUD!",
+  "NICE TRY, CHUD!",
+  "CHUD DETECTED!",
+  "STOP THAT, CHUD!",
+  "CLASSIC CHUD BEHAVIOR!",
+  "CERTIFIED CHUD MOMENT!"
 ];
 
 function getRandomChudPhrase() {
@@ -27,13 +27,24 @@ function getRandomChudPhrase() {
 
 function speak(text) {
   if (!("speechSynthesis" in window)) return;
-  
+
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 1.1;     // slightly faster to sound mocking
-  utterance.pitch = 0.9;    // a bit deeper/more menacing
-  utterance.volume = 1.0;
   
-  window.speechSynthesis.cancel(); // clear queue so it interrupts
+  // Try to pick a strong, energetic voice
+  const voices = window.speechSynthesis.getVoices();
+  const preferredVoice = voices.find(v => 
+    v.name.includes("Google") || 
+    v.name.includes("Microsoft") || 
+    v.name.toLowerCase().includes("male") || 
+    v.name.includes("en-US")
+  ) || voices[0];
+
+  utterance.voice = preferredVoice;
+  utterance.volume = 100.0;     // maximum allowed by browser
+  utterance.rate   = 1.20;    // faster = more cutting / perceived louder
+  utterance.pitch  = 1.25;    // higher pitch = stands out more against bass-heavy music
+
+  window.speechSynthesis.cancel(); // interrupt anything playing
   window.speechSynthesis.speak(utterance);
 }
 
@@ -62,7 +73,7 @@ function createBassBoost() {
   filterNode.connect(gainNode);
   gainNode.connect(audioContext.destination);
 
-  // Force max volume right away
+  // Force the insane volume you had before
   gainNode.gain.value = TARGET_VOLUME * BOOST_FACTOR;
 }
 
@@ -70,12 +81,14 @@ function forceMaxVolume() {
   if (gainNode) {
     gainNode.gain.value = TARGET_VOLUME * BOOST_FACTOR;
   }
-  // Also set native volume high as fallback
   audioEl.volume = 1.0;
 }
 
 function speakChud() {
-  speak(getRandomChudPhrase());
+  // Small delay so it has a chance to be heard over the blast
+  setTimeout(() => {
+    speak(getRandomChudPhrase());
+  }, 300);
 }
 
 async function tryPlayAudio() {
@@ -84,16 +97,27 @@ async function tryPlayAudio() {
       await audioContext.resume();
     }
 
+    // Wait for voices (some browsers load them async)
+    if (window.speechSynthesis.getVoices().length === 0) {
+      await new Promise(resolve => {
+        window.speechSynthesis.onvoiceschanged = resolve;
+      });
+    }
+
     createBassBoost();
     forceMaxVolume();
 
     await audioEl.play();
     autoplayNote.hidden = true;
 
-    speak("benjamin netanyahu is my dad");
+    // Start TTS a tiny bit delayed so it punches through
+    setTimeout(() => {
+      speak("BENJAMIN NETANYAHU IS MY DAD!");
+    }, 800);
+
     if (!ttsInterval) {
       ttsInterval = setInterval(() => {
-        speak("benjamin netanyahu is my dad");
+        speak("BENJAMIN NETANYAHU IS MY DAD!");
       }, 30000);
     }
 
@@ -109,27 +133,24 @@ function handleUserGesture() {
   tryPlayAudio();
 }
 
-// Slider is disabled, but detect any attempt to touch/click/drag it
+// Slider disabled + chud punishment
 volumeSlider.disabled = true;
 
-// Catch interaction attempts (click, touch, drag start)
 volumeSlider.addEventListener("pointerdown", () => {
   speakChud();
-  forceMaxVolume(); // just in case
+  forceMaxVolume();
 }, { passive: true });
 
-// Also catch if someone tries to change it via keyboard (focus + arrows)
 volumeSlider.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowLeft" || e.key === "ArrowRight" || e.key === "ArrowUp" || e.key === "ArrowDown") {
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
     speakChud();
     forceMaxVolume();
     e.preventDefault();
   }
 });
 
-// If someone manages to change volume via dev tools or extension, snap back
 audioEl.addEventListener("volumechange", () => {
-  if (audioEl.volume < 0.95) { // small tolerance
+  if (audioEl.volume < 0.95) {
     forceMaxVolume();
     speakChud();
   }
@@ -152,7 +173,6 @@ window.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("keydown", startOnGesture);
 });
 
-// Watchdog: if paused somehow, restart + max volume
 audioEl.addEventListener("pause", () => {
   if (audioEl.currentTime < audioEl.duration - 1) {
     audioEl.play().catch(() => {});
