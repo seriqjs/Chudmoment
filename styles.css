@@ -57,15 +57,24 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: 1rem;
   padding: 2rem;
 }
 
 .hero {
-  max-width: min(90vw, 640px);
+  max-width: min(90vw, 720px);
+  width: 100%;
   height: auto;
   border: 4px solid var(--red);
   box-shadow: 0 0 25px rgba(212, 0, 0, 0.45);
+  background: #000;
+}
+
+.hero-title {
+  font-size: clamp(1.3rem, 4vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .controls {

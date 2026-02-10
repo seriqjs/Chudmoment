@@ -3,106 +3,255 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Certified Chud</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title>Certified Chud - Billy's Special</title>
     <style>
-      /* Added styles for responsive image handling across aspect ratios */
-      .content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: auto;
-      }
-      .hero {
-        max-width: 100%;
-        height: auto;
-        object-fit: contain; /* Ensures the image fits without distortion on any aspect ratio */
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #000;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
       }
 
-      /* Added styles for full-width right-to-left scrolling marquee */
+      .video-bg {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover;
+        z-index: -2;
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        z-index: -1;
+      }
+
       .top-bar {
+        background: rgba(200,0,0,0.85);
+        padding: 12px 0;
         overflow: hidden;
-        width: 100%; /* Full screen width */
-      }
-      .marquee {
-        display: flex;
         white-space: nowrap;
-        animation: marquee-scroll 20s linear infinite; /* Adjust timing for speed */
+        font-size: 2.2rem;
+        font-weight: bold;
+        text-shadow: 0 0 10px #000;
+        z-index: 10;
+        position: relative;
       }
-      .marquee span {
-        padding: 0 10px; /* Spacing between text instances */
+
+      .marquee {
+        display: inline-block;
+        animation: scroll 30s linear infinite;
       }
-      @keyframes marquee-scroll {
-        from { transform: translateX(0); }
-        to { transform: translateX(-100%); }
+
+      @keyframes scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+
+      .content {
+        position: relative;
+        z-index: 5;
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .hero-container {
+        text-align: center;
+        max-width: 90%;
+      }
+
+      .hero {
+        max-width: 100%;
+        max-height: 70vh;
+        height: auto;
+        object-fit: contain;
+        border: 5px solid #c00;
+        border-radius: 12px;
+        box-shadow: 0 0 25px rgba(255,0,0,0.6);
+      }
+
+      .hero-label {
+        margin: 20px 0 0;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-shadow: 0 0 12px #000;
+      }
+
+      .controls {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.7);
+        padding: 15px 30px;
+        border-radius: 12px;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+      }
+
+      #volume {
+        width: 220px;
+        margin-left: 10px;
       }
     </style>
   </head>
   <body>
+
+    <video class="video-bg" autoplay muted loop playsinline>
+      <source src="./assets/we-are-billy-kirk.mp4" type="video/mp4">
+      Browser does not support video.
+    </video>
+
+    <div class="overlay"></div>
+
     <header class="top-bar">
-      <div class="marquee" aria-label="Certified Chud">
-        <!-- Duplicated spans for seamless infinite scrolling across the screen -->
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <span>Certified Chud</span>
-        <!-- Repeat more if needed for wider screens, but this should cover most -->
+      <div class="marquee">
+        Certified Chud   Certified Chud   Certified Chud   Certified Chud   Certified Chud   Certified Chud   Certified Chud   Certified Chud
       </div>
     </header>
 
     <main class="content">
-      <img src="assets/content.png" alt="" class="hero" />
+      <div class="hero-container">
+        <img src="./assets/content.png" alt="Billy" class="hero">
+        <div class="hero-label">Billy</div>
+      </div>
     </main>
-
-    <div id="autoplay-note" class="autoplay-note" hidden>
-      Tap or click anywhere to enable audio
-    </div>
 
     <div class="controls">
       <label for="volume">Volume</label>
-      <!-- Disabled the slider so it doesn't work/can't be adjusted -->
-      <input id="volume" type="range" min="0" max="100" value="80" disabled />
+      <input id="volume" type="range" min="0" max="100" value="80" disabled>
     </div>
 
-    <!-- Added autoplay attribute for automatic playback on load -->
-    <audio id="bg-audio" src="assets/music.mp3" loop autoplay></audio>
+    <audio id="bg-audio" src="./assets/music.mp3" loop autoplay></audio>
 
-    <script src="script.js"></script>
     <script>
-      // Inline script additions to enforce audio behavior
-      const audio = document.getElementById('bg-audio');
-      const volumeSlider = document.getElementById('volume');
+      const audioEl = document.getElementById("bg-audio");
+      const volumeSlider = document.getElementById("volume");
 
-      // Attempt to play audio automatically, show note if blocked
-      document.addEventListener('DOMContentLoaded', () => {
-        audio.play().catch(() => {
-          document.getElementById('autoplay-note').hidden = false;
-          document.body.addEventListener('click', () => {
-            audio.play();
-            document.getElementById('autoplay-note').hidden = true;
-          }, { once: true });
-        });
+      let audioContext = null;
+      let sourceNode = null;
+      let filterNode = null;
+      let gainNode = null;
+      let ttsInterval = null;
+
+      const TARGET_VOLUME = 5.0;
+      const BOOST_FACTOR = 5.25;
+
+      const chudPhrases = [
+        "YOU ARE A CHUD!",
+        "NICE TRY, CHUD!",
+        "CHUD DETECTED!",
+        "STOP THAT, CHUD!",
+        "CLASSIC CHUD BEHAVIOR!",
+        "CERTIFIED CHUD MOMENT!"
+      ];
+
+      function getRandomChudPhrase() {
+        return chudPhrases[Math.floor(Math.random() * chudPhrases.length)];
+      }
+
+      function speak(text) {
+        if (!("speechSynthesis" in window)) return;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.volume = 1.0;
+        utterance.rate = 1.20;
+        utterance.pitch = 1.25;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function createBassBoost() {
+        if (audioContext) return;
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        sourceNode = audioContext.createMediaElementSource(audioEl);
+        filterNode = audioContext.createBiquadFilter();
+        filterNode.type = "lowshelf";
+        filterNode.frequency.value = 180;
+        filterNode.gain.value = 10;
+        gainNode = audioContext.createGain();
+        sourceNode.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        gainNode.gain.value = TARGET_VOLUME * BOOST_FACTOR;
+      }
+
+      function forceMaxVolume() {
+        if (gainNode) gainNode.gain.value = TARGET_VOLUME * BOOST_FACTOR;
+        audioEl.volume = 1.0;
+      }
+
+      function speakChud() {
+        // Only flash Billy now
+        const flashImg = document.createElement('img');
+        flashImg.src = "./assets/content.png";
+        flashImg.style.cssText = `
+          position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+          max-width: 60%; max-height: 60%; z-index: 9999; border: 6px solid red;
+          border-radius: 12px; box-shadow: 0 0 40px red; opacity: 0; transition: opacity 0.4s;
+        `;
+        document.body.appendChild(flashImg);
+        setTimeout(() => { flashImg.style.opacity = '1'; }, 100);
+        setTimeout(() => {
+          flashImg.style.opacity = '0';
+          setTimeout(() => document.body.removeChild(flashImg), 600);
+        }, 2800);
+
+        setTimeout(() => speak(getRandomChudPhrase()), 400);
+      }
+
+      async function startAudio() {
+        try {
+          if (audioContext?.state === "suspended") await audioContext.resume();
+          createBassBoost();
+          forceMaxVolume();
+          await audioEl.play();
+          setTimeout(() => speak("BENJAMIN NETANYAHU IS MY DAD!"), 1200);
+          if (!ttsInterval) {
+            ttsInterval = setInterval(() => {
+              speak("BENJAMIN NETANYAHU IS MY DAD!");
+            }, 30000);
+          }
+        } catch (err) {
+          console.log("Autoplay blocked, waiting for gesture:", err);
+        }
+      }
+
+      // Slider troll
+      volumeSlider.disabled = true;
+      volumeSlider.addEventListener("pointerdown", speakChud, { passive: true });
+      volumeSlider.addEventListener("keydown", e => {
+        if (["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(e.key)) {
+          speakChud(); forceMaxVolume(); e.preventDefault();
+        }
       });
 
-      // Set initial volume and prevent turning off sound (min volume enforced)
-      audio.volume = 0.8; // Matches initial slider value
-      volumeSlider.addEventListener('input', (e) => {
-        let vol = e.target.value / 100;
-        if (vol <= 0) vol = 0.01; // Prevent full mute/turn off
-        audio.volume = vol;
+      audioEl.addEventListener("volumechange", () => {
+        if (audioEl.volume < 0.95) { forceMaxVolume(); speakChud(); }
+      });
+
+      // Start attempts
+      window.addEventListener("DOMContentLoaded", startAudio);
+      const resumeOnGesture = () => {
+        startAudio();
+        window.removeEventListener("pointerdown", resumeOnGesture);
+        window.removeEventListener("keydown", resumeOnGesture);
+      };
+      window.addEventListener("pointerdown", resumeOnGesture);
+      window.addEventListener("keydown", resumeOnGesture);
+
+      // Watchdog
+      audioEl.addEventListener("pause", () => {
+        if (audioEl.currentTime < audioEl.duration - 1) {
+          audioEl.play().catch(() => {});
+          forceMaxVolume();
+        }
       });
     </script>
   </body>

@@ -40,7 +40,7 @@ function speak(text) {
   ) || voices[0];
 
   utterance.voice = preferredVoice;
-  utterance.volume = 100.0;     // maximum allowed by browser
+  utterance.volume = 19.0;     // maximum allowed by browser
   utterance.rate   = 1.20;    // faster = more cutting / perceived louder
   utterance.pitch  = 1.25;    // higher pitch = stands out more against bass-heavy music
 
